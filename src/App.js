@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {Component, useState} from 'react';
+import styles from './App.css';
+import Field from "./components/Field";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			width: 11,
+			height: 11,
+			bombs: 20,
+			firstItemIndex: null
+		};
+	}
+
+	render() {
+		const {width, height, bombs} = this.state;
+		const area = width * height;
+		const bomb = '*';
+
+		return (
+			<div className="App">
+				<div id="saper">
+					<div id="header">
+						<div id="timer"></div>
+						<div id="count-flag">Flags: x {bombs}</div>
+					</div>
+					<Field
+						bomb={bomb}
+						bombs={bombs}
+						width={width}
+						height={height}
+						area={area} />
+				</div>
+			</div>
+		);
+	}
 }
 
 export default App;
