@@ -16,6 +16,7 @@ class App extends Component {
 	render() {
 		const {width, height, bombs} = this.state;
 		const area = width * height;
+		const flagsCount = bombs;
 		const bomb = '*';
 
 		return (
@@ -23,14 +24,15 @@ class App extends Component {
 				<div id="saper">
 					<div id="header">
 						<div id="timer"></div>
-						<div id="count-flag">Flags: x {bombs}</div>
+						<div id="count-flag">Flags: x {flagsCount}</div>
 					</div>
 					<Field
 						bomb={bomb}
 						bombs={bombs}
 						width={width}
 						height={height}
-						area={area} />
+						area={area}
+					/>
 				</div>
 			</div>
 		);

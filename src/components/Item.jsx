@@ -8,8 +8,19 @@ const Item = ({content, bomb}) => {
 		}
 	}
 
+	function toggleFlag(e) {
+		e.preventDefault();
+		if(!e.target.classList.contains('flag')/* && flagsCount > 0*/) {
+			e.target.classList.add('flag');
+			/*flagsCount--;*/
+		} else if(e.target.classList.contains('flag')) {
+			e.target.classList.remove('flag');
+			/*flagsCount++;*/
+		}
+	}
+
 	return (
-		<div onClick={checkItem} className='item active'>
+		<div onContextMenu={toggleFlag} onClick={checkItem} className='item active'>
 			{content}
 		</div>
 	);
