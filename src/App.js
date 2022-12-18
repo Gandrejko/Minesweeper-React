@@ -1,6 +1,8 @@
-import React, {Component, useState} from 'react';
+import React, {Component} from 'react';
 import styles from './App.css';
+import createBoard from './components/functions/createBoard';
 import Field from "./components/Field";
+import items from "./components/functions/items";
 
 class App extends Component {
 	constructor(props) {
@@ -9,16 +11,23 @@ class App extends Component {
 			width: 11,
 			height: 11,
 			bombs: 20,
-			firstItemIndex: null
+			bomb: '*'
 		};
+
+		this.board = createBoard(this.state.bombs, this.state.bomb, this.state.width, this.state.height).completedBoard;
+		this.items = items(this.board, this.checkItem);
+
+		this.checkItem = this.checkItem.bind(this);
+	}
+
+	checkItem(id) {
+		// const items = this.items;
+		console.log(id);
 	}
 
 	render() {
-		const {width, height, bombs} = this.state;
-		const area = width * height;
+		const {state : {width, height, bombs}, board, items} = this;
 		const flagsCount = bombs;
-		const bomb = '*';
-
 		return (
 			<div className="App">
 				<div id="saper">
@@ -27,11 +36,9 @@ class App extends Component {
 						<div id="count-flag">Flags: x {flagsCount}</div>
 					</div>
 					<Field
-						bomb={bomb}
-						bombs={bombs}
-						width={width}
 						height={height}
-						area={area}
+						width={width}
+						items={items}
 					/>
 				</div>
 			</div>

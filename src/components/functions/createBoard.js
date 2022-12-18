@@ -1,4 +1,5 @@
-export default function createBoard(bombs, bomb, width, height, area) {
+export default function createBoard(bombs, bomb, width, height) {
+	const area = width * height;
 	const board = [];
 
 	for (let i = 0; i < bombs;) {
@@ -18,7 +19,6 @@ export default function createBoard(bombs, bomb, width, height, area) {
 
 	const boardMatrix = [];
 	let boardInlineArr = boardInline;
-
 
 	while(boardInlineArr.length > 0) {
 		boardMatrix.push(boardInlineArr.slice(0, width));
@@ -43,6 +43,14 @@ export default function createBoard(bombs, bomb, width, height, area) {
 
 	const completedBoard = completedBoardArr.flat().map(item => (item === 0) ? '' : item);
 
+	const completedBoardMatrix = [];
+	let completedBoardInline = completedBoard;
+
+	while(completedBoardInline.length > 0) {
+		completedBoardMatrix.push(completedBoardInline.slice(0, width));
+		completedBoardInline = completedBoardInline.slice(width);
+	}
+
 	function checkIndexes(i, j, k, l) {
 		if(((i + k) < 0) || ((j + l) < 0)) return false;
 		if(((i + k) > height - 1) || ((j + l) > width - 1)) return false;
@@ -50,7 +58,7 @@ export default function createBoard(bombs, bomb, width, height, area) {
 		return true
 	}
 
-	return {boardInline, boardMatrix, completedBoard}
+	return {boardInline, boardMatrix, completedBoard, completedBoardMatrix}
 }
 
 
