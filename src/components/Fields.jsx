@@ -1,6 +1,6 @@
 import { Item } from "./Item";
 
-export const Fields = ({ board, width, height, checkItem }) => {
+export const Fields = ({ board, width, height, checkItem, toggleFlag }) => {
   const styles = {
     gridTemplateColumns: `repeat(${width}, 50px)`,
     gridTemplateRows: `repeat(${height}, 50px)`,
@@ -13,6 +13,7 @@ export const Fields = ({ board, width, height, checkItem }) => {
           <Item
             key={`${i}-${j}`}
             cell={cell}
+            onContextMenu={(e) => toggleFlag(e, i, j)}
             onClick={() => checkItem(i, j)}
           />
         ))
