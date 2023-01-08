@@ -1,10 +1,50 @@
-import { Component } from "react";
+import {
+  Component,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import "./App.css";
 import { createBoard } from "./components/functions/createBoard";
 import { Fields } from "./components/Fields";
-import { Menu } from "./components/Menu";
 
-class App extends Component {
+const TimerContext = createContext(null);
+const UpdateTimerContext = createContext(null);
+
+const TimerWrapper = ({ children }) => {
+  const [timeSeconds, setTimeSeconds] = useState(0);
+
+  const timerDescriptor = useRef(null);
+
+  const updateTimer = useCallback(() => {
+    setTimeSeconds(0);
+    clearInterval(timerDescriptor.current);
+
+    timerDescriptor.current = setInterval(
+      () => setTimeSeconds((p) => p + 1),
+      1_000
+    );
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      window.clearInterval(this.timerDescriptor);
+    };
+  }, []);
+
+  return (
+    <UpdateTimerContext.Provider value={updateTimer}>
+      <TimerContext.Provider value={timeSeconds}>
+        {children}
+      </TimerContext.Provider>
+    </UpdateTimerContext.Provider>
+  );
+};
+
+class Board extends Component {
   config = {
     bombs: 20,
     width: 11,
@@ -21,34 +61,29 @@ class App extends Component {
         this.config.width
       ),
       flagsLeft: this.config.bombs,
-      timeSeconds: 0,
     };
   }
 
-  componentWillUnmount() {
-    window.clearInterval(this.timerDescriptor);
-  }
-
-  beautifyTimer = (timeSeconds) => {
-    const minutes = Math.floor(timeSeconds / 60);
-    const seconds = timeSeconds % 60;
-
-    return `${minutes} m ${seconds} s`;
-  };
+  static contextType = UpdateTimerContext;
 
   endGame = (board) => {
-    const countActiveCells = board.flat().filter((cell) => cell.isActive).length;
+    const countActiveCells = board
+      .flat()
+      .filter((cell) => cell.isActive).length;
 
     if (countActiveCells <= this.config.bombs) {
-      setTimeout(() => {window.location.reload()}, 1000);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   };
 
   updateBoard = (board, i, j) => {
-    if(board.flat().filter((cell) => cell.isActive).length === this.config.height * this.config.width) {
-      this.timerDescriptor = window.setInterval(() => {
-        this.setState((prev) => ({ timeSeconds: prev.timeSeconds + 1 }));
-      }, 1000);
+    if (
+      board.flat().filter((cell) => cell.isActive).length ===
+      this.config.height * this.config.width
+    ) {
+      this.context();
     }
     if (!board[i][j].isFlag) {
       if (board[i][j].isBomb) {
@@ -128,7 +163,7 @@ class App extends Component {
       <div className="App">
         <div id="saper">
           <div id="header">
-            <div id="timer">{this.beautifyTimer(this.state.timeSeconds)}</div>
+            <TimerComponent />
             <div id="count-flag">Flags: x {flagsLeft}</div>
           </div>
           <Fields
@@ -143,5 +178,24 @@ class App extends Component {
     );
   }
 }
+
+const beautifyTimer = (timeSeconds) => {
+  const minutes = Math.floor(timeSeconds / 60);
+  const seconds = timeSeconds % 60;
+
+  return `${minutes} m ${seconds} s`;
+};
+
+const TimerComponent = () => {
+  const timeSeconds = useContext(TimerContext);
+
+  return <div id="timer">{beautifyTimer(timeSeconds)}</div>;
+};
+
+const App = () => (
+  <TimerWrapper>
+    <Board />
+  </TimerWrapper>
+);
 
 export default App;
