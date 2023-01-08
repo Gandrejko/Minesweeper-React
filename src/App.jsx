@@ -2,13 +2,13 @@ import { Component } from "react";
 import "./App.css";
 import { createBoard } from "./components/functions/createBoard";
 import { Fields } from "./components/Fields";
+import { Menu } from "./components/Menu";
 
 class App extends Component {
   config = {
     bombs: 20,
     width: 11,
     height: 11,
-    timeSeconds: 120,
   };
 
   constructor(props) {
@@ -21,16 +21,8 @@ class App extends Component {
         this.config.width
       ),
       flagsLeft: this.config.bombs,
-      timeSeconds: this.config.timeSeconds,
+      timeSeconds: 0,
     };
-  }
-
-  timerDescriptor = 0;
-
-  componentDidMount() {
-    this.timerDescriptor = window.setInterval(() => {
-      this.setState((prev) => ({ timeSeconds: prev.timeSeconds - 1 }));
-    }, 1000);
   }
 
   componentWillUnmount() {
@@ -45,17 +37,19 @@ class App extends Component {
   };
 
   endGame = (board) => {
-    const countActiveCells = board
-      .flat()
-      .filter((cell) => cell.isActive).length;
-    const countBombCells = board.flat().filter((cell) => cell.isBomb).length;
-    console.log(countActiveCells, countBombCells);
+    const countActiveCells = board.flat().filter((cell) => cell.isActive).length;
 
-    if (countActiveCells <= countBombCells)
-      setTimeout(window.location.reload(), 2000);
+    if (countActiveCells <= this.config.bombs) {
+      setTimeout(() => {window.location.reload()}, 1000);
+    }
   };
 
   updateBoard = (board, i, j) => {
+    if(board.flat().filter((cell) => cell.isActive).length === this.config.height * this.config.width) {
+      this.timerDescriptor = window.setInterval(() => {
+        this.setState((prev) => ({ timeSeconds: prev.timeSeconds + 1 }));
+      }, 1000);
+    }
     if (!board[i][j].isFlag) {
       if (board[i][j].isBomb) {
         window.location.reload();
